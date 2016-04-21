@@ -4,6 +4,7 @@ from TaskMgrFacade import TaskMgrFacade
 
 
 class TaskMgrDeskDialog(QDialog):
+
     facade = None  # type:TaskMgrFacade
 
     def initUI(self, details):
@@ -12,8 +13,6 @@ class TaskMgrDeskDialog(QDialog):
         self.edit = QTextEdit(self)
         self.edit.setText(details['desc'])
         grid.addWidget(self.edit, 0, 0, 1, 1)
-        # self.setWindowTitle("PyQt Dialog demo")
-        # self.show()
         self.edit.textChanged.connect(self.updateDesc)
         self.setWindowTitle("Dialog")
         self.setWindowModality(Qt.ApplicationModal)
@@ -21,12 +20,14 @@ class TaskMgrDeskDialog(QDialog):
 
     def updateDesc(self):
         try:
-            self.facade.updateOne(self.row, "desc", self.edit.toPlainText())
+            self.widget.updateDesc(self.edit.toPlainText())
+            self.widget.facade.updateOne(self.row, "desc", self.edit.toPlainText())
+
         except  Exception as e:
             print(e)
 
-    def __init__(self, facade, row, details):
+    def __init__(self, widget, row, details):
         super().__init__()
-        self.facade = facade
+        self.widget = widget
         self.row = row
         self.initUI(details)

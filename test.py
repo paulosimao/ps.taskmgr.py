@@ -1,7 +1,7 @@
-from PyQt5.QtWidgets.QTableWidget import QTableWidget
+import json
+from pprint import pprint
 
-t  = QTableWidget()
-t.s
+with open('config.json') as data_file:
+    data = json.load(data_file)
 
-
-
+pprint(data)

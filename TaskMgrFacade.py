@@ -1,26 +1,23 @@
 from pymongo import MongoClient
 from bson import ObjectId
+import json
 
 
 class TaskMgrFacade:
-    keysArray = []
-    itemsArray = []
-
     def __init__(self):
-        self.client = MongoClient()
+        with open('config.json') as data_file:
+            self.data = json.load(data_file)
+        self.client = MongoClient(self.data['dburl'])
         self.col = self.client.tasks.tasks
 
     def getTasks(self):
-        self.keysArray = []
         ret = []
         for doc in self.col.find():
-            self.keysArray.append(doc['_id'])
             ret.append(doc)
         return ret
 
     def inserTask(self, t):
         ret = self.col.insert(t)
-        self.keysArray.append(ret)
         return ret
 
     def createNew(self) -> dict:
@@ -30,13 +27,11 @@ class TaskMgrFacade:
         return d
 
     def deleteOne(self, id):
-        objid = self.keysArray[id]
-        self.keysArray.remove(objid)
-        self.col.delete_one({"_id": objid})
+        self.col.delete_one({"_id": ObjectId(id)})
 
     def updateOne(self, id, fname, fval):
-        self.col.update({"_id": self.keysArray[id]}, {"$set": {fname: fval}})
+        self.col.update({"_id": ObjectId(id)}, {"$set": {fname: fval}})
 
     def getTaskDetails(self, id):
-        ret = self.col.find_one({"_id": self.keysArray[id]})
+        ret = self.col.find_one({"_id": ObjectId(id)})
         return ret
