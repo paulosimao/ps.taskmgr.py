@@ -1,29 +1,32 @@
-import sys
-from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
+from TaskMgrFacade import TaskMgrFacade
 
 
-def window():
-    app = QApplication(sys.argv)
-    w = QWidget()
-    b = QPushButton(w)
-    b.setText("Hello World!")
-    b.move(50, 50)
-    b.clicked.connect(showdialog)
-    w.setWindowTitle("PyQt Dialog demo")
-    w.show()
-    sys.exit(app.exec_())
+class TaskMgrDeskDialog(QDialog):
+    facade = None  # type:TaskMgrFacade
 
+    def initUI(self, details):
+        grid = QGridLayout()
+        self.setLayout(grid)
+        self.edit = QTextEdit(self)
+        self.edit.setText(details['desc'])
+        grid.addWidget(self.edit, 0, 0, 1, 1)
+        # self.setWindowTitle("PyQt Dialog demo")
+        # self.show()
+        self.edit.textChanged.connect(self.updateDesc)
+        self.setWindowTitle("Dialog")
+        self.setWindowModality(Qt.ApplicationModal)
+        self.exec_()
 
-def showdialog():
-    d = QDialog()
-    b1 = QPushButton("ok", d)
-    b1.move(50, 50)
-    d.setWindowTitle("Dialog")
-    d.setWindowModality(Qt.ApplicationModal)
-    d.exec_()
+    def updateDesc(self):
+        try:
+            self.facade.updateOne(self.row, "desc", self.edit.toPlainText())
+        except  Exception as e:
+            print(e)
 
-
-if __name__ == '__main__':
-    window()
+    def __init__(self, facade, row, details):
+        super().__init__()
+        self.facade = facade
+        self.row = row
+        self.initUI(details)

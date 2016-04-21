@@ -1,4 +1,5 @@
 import sys
+import TaskMgrTaskDescDialog
 from PyQt5.QtWidgets import *
 from TaskMgrFacade import TaskMgrFacade
 
@@ -51,6 +52,7 @@ class TaskMgrWidget(QWidget):
     def onGetDetails(self):
         for r in self.table.selectedIndexes():
             details = self.facade.getTaskDetails(r.row())
+            t = TaskMgrTaskDescDialog.TaskMgrDeskDialog(self.facade, r.row(), details)
             print(details)
 
     def onItemChanged(self, item: QTableWidgetItem):
@@ -64,7 +66,6 @@ class TaskMgrWidget(QWidget):
     def initUI(self):
         grid = QGridLayout()
         self.setLayout(grid)
-
 
         self.table = QTableWidget()
         self.table.setColumnCount(2)
